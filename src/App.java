@@ -7,7 +7,9 @@ public class App {
 
         // Letra.a();
         // Letra.ab();
-        Letra.nome();
+        // Letra.nome();
+
+        Calculadora.calculadora("(3 + 3) / (2 + 1)");
     }
 }
 
@@ -150,5 +152,26 @@ class Letra {
         System.out.println(l4);
         System.out.println(l5);
         System.out.println(l6);
+    }
+}
+
+class Calculadora {
+    public static void calculadora(String expressao) {
+        // Removendo os espaços em branco e os parenteses
+        expressao = expressao.replaceAll(" ", "").replaceAll("[()]", "");
+
+        // Obtendo os números e operadores com split
+        String[] numeros = expressao.split("[+*/-]");
+        /*
+         * Primeiro remove os números, depois da split nos espaços vazios. Isso evita
+         * com que existam índices vázios no array
+         */
+        String[] operadores = expressao.replaceAll("[0-9]", "").split("");
+
+        for (String s : numeros)
+            System.out.println(s);
+
+        for (String s : operadores)
+            System.out.println(s);
     }
 }
