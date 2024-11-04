@@ -9,7 +9,7 @@ public class App {
         // Letra.ab();
         // Letra.nome();
 
-        Calculadora.calculadora("(3 + 3) / (2 + 1)");
+        Calculadora.calculadora("(4 + 7) / (10 * 10)");
     }
 }
 
@@ -155,23 +155,45 @@ class Letra {
     }
 }
 
+/*
+ * Classe calculadora
+ */
 class Calculadora {
-    public static void calculadora(String expressao) {
-        // Removendo os espaços em branco e os parenteses
-        expressao = expressao.replaceAll(" ", "").replaceAll("[()]", "");
+    public static void calculadora(String ex) {
+        String[] partes = ex.trim().replaceAll(" ", "")
+                .split("(?<=\\()|(?=\\()|(?<=\\))|(?=\\))|(?=[+*/-])|(?<=[+*/-])");
 
-        // Obtendo os números e operadores com split
-        String[] numeros = expressao.split("[+*/-]");
-        /*
-         * Primeiro remove os números, depois da split nos espaços vazios. Isso evita
-         * com que existam índices vázios no array
-         */
-        String[] operadores = expressao.replaceAll("[0-9]", "").split("");
+        // Exibir as partes resultantes
+        for (String parte : partes) {
+            if (!parte.isEmpty()) { // Verifica se a parte não está vazia
+                System.out.println(parte);
+            }
+        }
 
-        for (String s : numeros)
-            System.out.println(s);
+        int indexOp = 0;
 
-        for (String s : operadores)
-            System.out.println(s);
+        StringBuilder sb = new StringBuilder(ex.trim().replaceAll(" ", ""));
+
+        for (int index = 0; index < ex.length(); index++) {
+            if ((partes[index].equals("*") && !partes[index + 1].equals("(")) ||
+                    (partes[index].equals("/") && !partes[index + 1].equals("("))) {
+
+                indexOp = index;
+
+                double num1 = Double.parseDouble(partes[index - 1]);
+                double num2 = Double.parseDouble(partes[index + 1]);
+                double resultado = partes[index].equals("*") ? num1 * num2 : num1 / num2;
+
+                System.out.println(sb);
+
+                // if (partes[index - 1].length() > 1 && partes[index + 1].length() > 1)
+                // sb.replace(index - 2, index + 2, Double.toString(resultado));
+
+                // System.out.println(resultado);
+                // System.out.println(sb);
+
+                break;
+            }
+        }
     }
 }
