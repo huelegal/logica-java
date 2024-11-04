@@ -171,6 +171,8 @@ class Calculadora {
         }
 
         int indexOp = 0;
+        int indexInicio = 0;
+        int indexFim = 0;
 
         StringBuilder sb = new StringBuilder(ex.trim().replaceAll(" ", ""));
 
@@ -178,13 +180,25 @@ class Calculadora {
             if ((partes[index].equals("*") && !partes[index + 1].equals("(")) ||
                     (partes[index].equals("/") && !partes[index + 1].equals("("))) {
 
+                /**
+                 * Pegar o inicio
+                 */
+                for (int parenteses = 0; parenteses < partes.length; parenteses++) {
+                    if (partes[parenteses].equals("("))
+                        indexInicio = parenteses;
+
+                    if (partes[parenteses].equals(")"))
+                        indexFim = parenteses;
+                }
+
                 indexOp = index;
 
-                double num1 = Double.parseDouble(partes[index - 1]);
-                double num2 = Double.parseDouble(partes[index + 1]);
-                double resultado = partes[index].equals("*") ? num1 * num2 : num1 / num2;
+                int num1 = Integer.parseInt(partes[index - 1]);
+                int num2 = Integer.parseInt(partes[index + 1]);
+                int resultado = partes[index].equals("*") ? num1 * num2 : num1 / num2;
 
-                System.out.println(sb);
+                System.out.println(sb.replace(indexInicio, indexFim, Integer.toString(resultado)));
+                System.out.println(resultado);
 
                 // if (partes[index - 1].length() > 1 && partes[index + 1].length() > 1)
                 // sb.replace(index - 2, index + 2, Double.toString(resultado));
