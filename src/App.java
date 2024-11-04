@@ -9,7 +9,7 @@ public class App {
         // Letra.ab();
         // Letra.nome();
 
-        Calculadora.calculadora("(4 + 7) / (10 * 10)");
+        Calculadora.calculadora("(8 + 4) / 6");
     }
 }
 
@@ -160,6 +160,8 @@ class Letra {
  */
 class Calculadora {
     public static void calculadora(String ex) {
+        ex = ex.trim().replaceAll(" ", "");
+
         String[] partes = ex.trim().replaceAll(" ", "")
                 .split("(?<=\\()|(?=\\()|(?<=\\))|(?=\\))|(?=[+*/-])|(?<=[+*/-])");
 
@@ -171,40 +173,60 @@ class Calculadora {
         }
 
         int indexOp = 0;
-        int indexInicio = 0;
-        int indexFim = 0;
+        int resultado = 0;
+        int index = 0;
 
         StringBuilder sb = new StringBuilder(ex.trim().replaceAll(" ", ""));
 
-        for (int index = 0; index < ex.length(); index++) {
+        while (ex.contains("(")) {
             if ((partes[index].equals("*") && !partes[index + 1].equals("(")) ||
                     (partes[index].equals("/") && !partes[index + 1].equals("("))) {
 
-                /**
-                 * Pegar o inicio
-                 */
-                for (int parenteses = 0; parenteses < partes.length; parenteses++) {
-                    if (partes[parenteses].equals("("))
-                        indexInicio = parenteses;
-
-                    if (partes[parenteses].equals(")"))
-                        indexFim = parenteses;
-                }
+                // Procurar parênteses mais próximos ao redor da operação
+                int indexInicio = sb.lastIndexOf("(", sb.indexOf(partes[index - 1]));
+                int indexFim = sb.indexOf(")", sb.indexOf(partes[index + 1])) + 1;
 
                 indexOp = index;
 
                 int num1 = Integer.parseInt(partes[index - 1]);
                 int num2 = Integer.parseInt(partes[index + 1]);
-                int resultado = partes[index].equals("*") ? num1 * num2 : num1 / num2;
+                resultado = partes[index].equals("*") ? num1 * num2 : num1 / num2;
 
                 System.out.println(sb.replace(indexInicio, indexFim, Integer.toString(resultado)));
-                System.out.println(resultado);
 
-                // if (partes[index - 1].length() > 1 && partes[index + 1].length() > 1)
-                // sb.replace(index - 2, index + 2, Double.toString(resultado));
+                index++;
 
-                // System.out.println(resultado);
-                // System.out.println(sb);
+                if (sb.toString().matches(".*[+\\-*/].*")) {
+                    calculadora(sb.toString());
+                    index = 0;
+                } else {
+                    System.out.println(resultado);
+                }
+
+                break;
+            } else if ((partes[index].equals("+") && !partes[index + 1].equals("(")) ||
+                    partes[index].equals("-") && !partes[index + 1].equals("(")) {
+
+                // Procurar parênteses mais próximos ao redor da operação
+                int indexInicio = sb.lastIndexOf("(", sb.indexOf(partes[index - 1]));
+                int indexFim = sb.indexOf(")", sb.indexOf(partes[index + 1])) + 1;
+
+                indexOp = index;
+
+                int num1 = Integer.parseInt(partes[index - 1]);
+                int num2 = Integer.parseInt(partes[index + 1]);
+                resultado = partes[index].equals("+") ? num1 + num2 : num1 - num2;
+
+                System.out.println(sb.replace(indexInicio, indexFim, Integer.toString(resultado)));
+
+                index++;
+
+                if (sb.toString().matches(".*[+\\-*/].*")) {
+                    calculadora(sb.toString());
+                    index = 0;
+                } else {
+                    System.out.println(resultado);
+                }
 
                 break;
             }
