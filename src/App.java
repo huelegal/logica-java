@@ -11,7 +11,7 @@ public class App {
         // Letra.ab();
         // Letra.nome();
 
-        Calculadora.calculadora("4 * (3 + 3) + 10 + (10 * 8 + (2 - 1))");
+        Calculadora.calculadora("2 + (2 + 2 / 1)");
     }
 }
 
@@ -198,25 +198,25 @@ class Calculadora {
             int indexInicio = expressao.lastIndexOf("(");
             int indexFinal = expressao.indexOf(")", indexInicio) + 1;
 
-            conta = expressao.substring(indexInicio, indexFinal);
+            conta = expressao.substring(indexInicio, indexFinal).replaceAll("[()]", "");
             String elementos[] = conta.toString().split("(?<=\\()|(?=\\()|(?<=\\))|(?=\\))|(?=[+*/-])|(?<=[+*/-])");
 
-            if (elementos.length > 5) {
+            if (elementos.length > 3) {
                 if (conta.contains("*") && op == 0)
-                    op = Arrays.asList(numeros).indexOf("*");
+                    op = Arrays.asList(elementos).indexOf("*");
 
                 if (conta.contains(("/")) && op == 0)
-                    op = Arrays.asList(numeros).indexOf("/");
+                    op = Arrays.asList(elementos).indexOf("/");
 
                 if (conta.contains(("+")) && op == 0)
-                    op = Arrays.asList(numeros).indexOf("+");
+                    op = Arrays.asList(elementos).indexOf("+");
 
                 if (conta.contains(("-")) && op == 0)
-                    op = Arrays.asList(numeros).indexOf("-");
+                    op = Arrays.asList(elementos).indexOf("-");
 
-                indexInicio = conta.contains("(") ? op : op - 1;
-                indexFinal = op + numeros[op - 1].length() - 1 + numeros[op + 1].length() + 1;
-                conta = conta.substring(indexInicio, indexFinal);
+                int contaInicio = op - 1;
+                int contaFim = op + elementos[op - 1].length() - 1 + elementos[op + 1].length() + 1;
+                conta = conta.substring(contaInicio, contaFim);
             }
 
             sb.replace(indexInicio, indexFinal, calcular(conta));
@@ -260,7 +260,6 @@ class Calculadora {
                 calculadora(sb.toString());
             else {
                 System.out.println(sb.toString());
-                return;
             }
         }
     }
