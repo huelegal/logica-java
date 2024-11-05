@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 public class App {
     public static void main(String[] args) throws Exception {
         // Piramide.direita();
@@ -9,7 +11,7 @@ public class App {
         // Letra.ab();
         // Letra.nome();
 
-        // Calculadora.calculadora("(8 + 4) / (2 * 2)");
+        Calculadora.calculadora("4 * (3 + 3) + 10 + (10 * 8 + (2 - 1))");
     }
 }
 
@@ -176,79 +178,138 @@ class Letra {
     }
 }
 
-/*
- * Classe calculadora
+/**
+ * Calculadora
  */
 class Calculadora {
-    public static void calculadora(String ex) {
-        ex = ex.trim().replaceAll(" ", "");
+    public static void calculadora(String expressao) {
+        // Removendo espaços da expressão
+        expressao = expressao.trim().replaceAll(" ", "");
 
-        String[] partes = ex.trim().replaceAll(" ", "")
-                .split("(?<=\\()|(?=\\()|(?<=\\))|(?=\\))|(?=[+*/-])|(?<=[+*/-])");
+        StringBuilder sb = new StringBuilder(expressao);
+        String numeros[] = sb.toString().split("(?<=\\()|(?=\\()|(?<=\\))|(?=\\))|(?=[+*/-])|(?<=[+*/-])");
 
-        // Exibir as partes resultantes
-        for (String parte : partes) {
-            if (!parte.isEmpty()) { // Verifica se a parte não está vazia
-                System.out.println(parte);
+        // Verificando se contém parenteses e resolvendo
+        String conta = "";
+        int op = 0;
+
+        if (sb.toString().contains("(")) {
+            // Pegando o index dos parenteses pra resolver a conta
+            int indexInicio = expressao.lastIndexOf("(");
+            int indexFinal = expressao.indexOf(")", indexInicio) + 1;
+
+            conta = expressao.substring(indexInicio, indexFinal);
+            String elementos[] = conta.toString().split("(?<=\\()|(?=\\()|(?<=\\))|(?=\\))|(?=[+*/-])|(?<=[+*/-])");
+
+            if (elementos.length > 5) {
+                if (conta.contains("*") && op == 0)
+                    op = Arrays.asList(numeros).indexOf("*");
+
+                if (conta.contains(("/")) && op == 0)
+                    op = Arrays.asList(numeros).indexOf("/");
+
+                if (conta.contains(("+")) && op == 0)
+                    op = Arrays.asList(numeros).indexOf("+");
+
+                if (conta.contains(("-")) && op == 0)
+                    op = Arrays.asList(numeros).indexOf("-");
+
+                indexInicio = conta.contains("(") ? op : op - 1;
+                indexFinal = op + numeros[op - 1].length() - 1 + numeros[op + 1].length() + 1;
+                conta = conta.substring(indexInicio, indexFinal);
             }
+
+            sb.replace(indexInicio, indexFinal, calcular(conta));
+
+            // System.out.println(sb);
+
+            numeros = sb.toString().split("(?<=\\()|(?=\\()|(?<=\\))|(?=\\))|(?=[+*/-])|(?<=[+*/-])");
+
+            if (numeros.length > 1) {
+                calculadora(sb.toString());
+            } else {
+                System.out.println(sb.toString());
+            }
+
+            return;
         }
 
-        int indexOp = 0;
+        if (!sb.toString().contains("(")) {
+            if (sb.toString().contains("*") && op == 0)
+                op = Arrays.asList(numeros).indexOf("*");
+
+            if (sb.toString().contains(("/")) && op == 0)
+                op = Arrays.asList(numeros).indexOf("/");
+
+            if (sb.toString().contains(("+")) && op == 0)
+                op = Arrays.asList(numeros).indexOf("+");
+
+            if (sb.toString().contains(("-")) && op == 0)
+                op = Arrays.asList(numeros).indexOf("-");
+
+            int indexInicio = op - 1;
+            int indexFinal = op + numeros[op - 1].length() - 1 + numeros[op + 1].length() + 1;
+            conta = expressao.substring(indexInicio, indexFinal);
+
+            sb.replace(indexInicio, indexFinal, calcular(conta));
+            // System.out.println(sb);
+
+            numeros = sb.toString().split("(?<=\\()|(?=\\()|(?<=\\))|(?=\\))|(?=[+*/-])|(?<=[+*/-])");
+
+            if (numeros.length > 1)
+                calculadora(sb.toString());
+            else {
+                System.out.println(sb.toString());
+                return;
+            }
+        }
+    }
+
+    public static String calcular(String calculo) {
+        // Separando a string em um array de números
+        String numeros[] = calculo.split("(?<=\\()|(?=\\()|(?<=\\))|(?=\\))|(?=[+*/-])|(?<=[+*/-])");
         int resultado = 0;
-        int index = 0;
 
-        StringBuilder sb = new StringBuilder(ex.trim().replaceAll(" ", ""));
+        if (calculo.contains("*")) {
+            // Definindo a posição do operador e números
+            int op = Arrays.asList(numeros).indexOf("*");
+            int num1 = Integer.parseInt(numeros[op - 1]);
+            int num2 = Integer.parseInt(numeros[op + 1]);
 
-        while (ex.contains("(")) {
-            if ((partes[index].equals("*") && !partes[index + 1].equals("(")) ||
-                    (partes[index].equals("/") && !partes[index + 1].equals("("))) {
-
-                // Procurar parênteses mais próximos ao redor da operação
-                int indexInicio = sb.lastIndexOf("(", sb.indexOf(partes[index - 1]));
-                int indexFim = sb.indexOf(")", sb.indexOf(partes[index + 1])) + 1;
-
-                indexOp = index;
-
-                int num1 = Integer.parseInt(partes[index - 1]);
-                int num2 = Integer.parseInt(partes[index + 1]);
-                resultado = partes[index].equals("*") ? num1 * num2 : num1 / num2;
-
-                System.out.println(sb.replace(indexInicio, indexFim, Integer.toString(resultado)));
-
-                index++;
-
-                if (sb.toString().contains(".*[+\\-*/].*")) {
-                    index = 0;
-                    calculadora(sb.toString());
-                } else {
-                    System.out.println(resultado);
-                }
-            } else if ((partes[index].equals("+") && !partes[index + 1].equals("(")) ||
-                    partes[index].equals("-") && !partes[index + 1].equals("(")) {
-
-                // Procurar parênteses mais próximos ao redor da operação
-                int indexInicio = sb.lastIndexOf("(", sb.indexOf(partes[index - 1]));
-                int indexFim = sb.indexOf(")", sb.indexOf(partes[index + 1])) + 1;
-
-                indexOp = index;
-
-                int num1 = Integer.parseInt(partes[index - 1]);
-                int num2 = Integer.parseInt(partes[index + 1]);
-                resultado = partes[index].equals("+") ? num1 + num2 : num1 - num2;
-
-                System.out.println(sb.replace(indexInicio, indexFim, Integer.toString(resultado)));
-
-                index++;
-
-                if (sb.toString().contains(".*[+\\-*/].*")) {
-                    index = 0;
-                    calculadora(sb.toString());
-                } else {
-                    System.out.println(resultado);
-                }
-            }
-
-            index++;
+            // Calculando o resultado
+            return Integer.toString(resultado = num1 * num2);
         }
+
+        if (calculo.contains("/")) {
+            // Definindo a posição do operador e números
+            int op = Arrays.asList(numeros).indexOf("/");
+            int num1 = Integer.parseInt(numeros[op - 1]);
+            int num2 = Integer.parseInt(numeros[op + 1]);
+
+            // Calculando o resultado
+            return Integer.toString(resultado = num1 / num2);
+        }
+
+        if (calculo.contains("+")) {
+            // Definindo a posição do operador e números
+            int op = Arrays.asList(numeros).indexOf("+");
+            int num1 = Integer.parseInt(numeros[op - 1]);
+            int num2 = Integer.parseInt(numeros[op + 1]);
+
+            // Calculando o resultado
+            return Integer.toString(resultado = num1 + num2);
+        }
+
+        if (calculo.contains("-")) {
+            // Definindo a posição do operador e números
+            int op = Arrays.asList(numeros).indexOf("-");
+            int num1 = Integer.parseInt(numeros[op - 1]);
+            int num2 = Integer.parseInt(numeros[op + 1]);
+
+            // Calculando o resultado
+            return Integer.toString(resultado = num1 - num2);
+        }
+
+        return Integer.toString(resultado);
     }
 }
