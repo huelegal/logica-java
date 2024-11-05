@@ -9,7 +9,7 @@ public class App {
         // Letra.ab();
         // Letra.nome();
 
-        Calculadora.calculadora("(8 + 4) / 6");
+        // Calculadora.calculadora("(8 + 4) / (2 * 2)");
     }
 }
 
@@ -56,20 +56,41 @@ class Piramide {
     }
 
     public static void direitaInversa() {
+        for (int i = 0; i < 6; i++) {
+            System.out.println(" ".repeat(i) + (5 - i));
+        }
+
         String s = "";
 
         for (int i = 5; i >= 0; i--) {
             System.out.println(s + i);
             s += (char) 32;
         }
+
+        for (int i = 0; i < 6; i++) {
+            StringBuilder sb = new StringBuilder("      ");
+            sb.setCharAt(i, (char) (53 - i));
+            System.out.println(sb);
+        }
     }
 
     public static void esquerdaInversa() {
-        String s = "      ";
+        String s = " ".repeat(6);
+
+        for (int i = 5; i >= 0; i--) {
+            System.out.println(s + (5 - i));
+            s = s.replaceAll(" $", "");
+        }
+
+        for (int i = 5; i >= 0; i--) {
+            System.out.println(" ".repeat(i) + (5 - i));
+        }
+
+        String s2 = "      ";
 
         for (int i = 0; i < 6; i++) {
-            s = s.replaceAll("^ ", "");
-            System.out.println(s + i);
+            s2 = s2.replaceAll("^ ", "");
+            System.out.println(s2 + i);
         }
     }
 }
@@ -196,14 +217,12 @@ class Calculadora {
 
                 index++;
 
-                if (sb.toString().matches(".*[+\\-*/].*")) {
-                    calculadora(sb.toString());
+                if (sb.toString().contains(".*[+\\-*/].*")) {
                     index = 0;
+                    calculadora(sb.toString());
                 } else {
                     System.out.println(resultado);
                 }
-
-                break;
             } else if ((partes[index].equals("+") && !partes[index + 1].equals("(")) ||
                     partes[index].equals("-") && !partes[index + 1].equals("(")) {
 
@@ -221,15 +240,15 @@ class Calculadora {
 
                 index++;
 
-                if (sb.toString().matches(".*[+\\-*/].*")) {
-                    calculadora(sb.toString());
+                if (sb.toString().contains(".*[+\\-*/].*")) {
                     index = 0;
+                    calculadora(sb.toString());
                 } else {
                     System.out.println(resultado);
                 }
-
-                break;
             }
+
+            index++;
         }
     }
 }
